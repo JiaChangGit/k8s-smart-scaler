@@ -101,7 +101,8 @@ jobs:
     name: 🚀 Deploy to K8s
     needs: build-and-push
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    #if: github.ref == 'refs/heads/main' # for local
+    if: false # for docker hub
 
     steps:
       - name: Checkout code
