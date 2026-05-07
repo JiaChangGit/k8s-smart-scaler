@@ -18,9 +18,9 @@ spec:
     spec:
       containers:
         - name: prediction-service
-          # ⚠️ 將 YOUR_DOCKERHUB_USERNAME 替換為你的 Docker Hub 帳號
+          # !!!  Docker Hub 帳號
           image: jiachanggit/k8s-smart-scaler-prediction:latest
-          imagePullPolicy: Always
+          imagePullPolicy: Never
           ports:
             - containerPort: 8000
               name: http

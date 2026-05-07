@@ -18,9 +18,9 @@ spec:
       serviceAccountName: smart-scaler-sa   # 使用有 K8s 權限的 SA
       containers:
         - name: scaler-controller
-          # ⚠️ 將 YOUR_DOCKERHUB_USERNAME 替換為你的 Docker Hub 帳號
+          # !!!  Docker Hub 帳號
           image: jiachanggit/k8s-smart-scaler-controller:latest
-          imagePullPolicy: Always
+          imagePullPolicy: Never
           env:
             - name: PREDICTION_SERVICE_URL
               value: "http://prediction-service.smart-scaler.svc.cluster.local:8000"

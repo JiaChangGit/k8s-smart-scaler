@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 env:
-  # ⚠️ 改為你的 Docker Hub 帳號
+  # !!! 改為你的 Docker Hub 帳號
   DOCKERHUB_USERNAME: ${{ secrets.jiachanggit }}
 
 jobs:
@@ -113,7 +113,7 @@ jobs:
           version: "v1.30.0"
 
       - name: Configure kubeconfig
-        # ⚠️ 需要在 GitHub Secrets 加入 KUBE_CONFIG（base64 編碼的 kubeconfig）
+        # !!! 需要在 GitHub Secrets 加入 KUBE_CONFIG（base64 編碼的 kubeconfig）
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config

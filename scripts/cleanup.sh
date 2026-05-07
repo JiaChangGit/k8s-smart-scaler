@@ -23,7 +23,7 @@ BLUE='\033[0;34m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 
 log()     { echo -e "${BLUE}${BOLD}▶ $1${NC}"; }
 success() { echo -e "${GREEN}✅ $1${NC}"; }
-warn()    { echo -e "${YELLOW}⚠️  $1${NC}"; }
+warn()    { echo -e "${YELLOW}!!!  $1${NC}"; }
 info()    { echo -e "${CYAN}   $1${NC}"; }
 err()     { echo -e "${RED}❌ $1${NC}"; }
 

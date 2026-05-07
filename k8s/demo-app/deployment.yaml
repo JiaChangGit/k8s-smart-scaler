@@ -22,9 +22,9 @@ spec:
     spec:
       containers:
         - name: demo-app
-          # ⚠️ 將 YOUR_DOCKERHUB_USERNAME 替換為你的 Docker Hub 帳號
+          # !!!  Docker Hub 帳號
           image: jiachanggit/k8s-smart-scaler-demo:latest
-          imagePullPolicy: Always
+          imagePullPolicy: Never
           ports:
             - containerPort: 8000
               name: http

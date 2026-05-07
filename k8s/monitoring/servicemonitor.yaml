@@ -1,0 +1,80 @@
+# =============================================================================
+# k8s/monitoring/servicemonitor.yaml
+#
+# ServiceMonitor 是 Prometheus Operator 的 CRD，
+# 告訴 Prometheus 要去 scrape 哪些 Service 的 /metrics。
+#
+# 前提：已用 Helm 安裝 kube-prometheus-stack，
+#       它會自動安裝 Prometheus Operator 和 ServiceMonitor CRD。
+#
+# 套用指令：kubectl apply -f k8s/monitoring/servicemonitor.yaml
+# =============================================================================
+
+# ── 1. Demo App 的 ServiceMonitor ─────────────────────────────────────────────
+# 監控「被縮放的目標服務」，抓 HTTP request 次數、延遲等指標
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: demo-app-monitor
+  namespace: monitoring          # ServiceMonitor 本身放在 monitoring namespace
+  labels:
+    release: prometheus          # ⚠️ 必須和 Helm release 名稱一致，Prometheus Operator 靠這個 label 找到它
+    app: demo-app
+spec:
+  # 要去哪些 namespace 找 Service
+  namespaceSelector:
+    matchNames:
+      - demo
+
+  # 用 label 選擇器鎖定要監控的 Service
+  selector:
+    matchLabels:
+      app: demo-app
+
+  # scrape 設定
+  endpoints:
+    - port: http                 # 對應 Service 裡的 port name（不是 port 號碼）
+      path: /metrics             # prometheus-fastapi-instrumentator 預設暴露的路徑
+      interval: 15s              # 每 15 秒 scrape 一次
+      scrapeTimeout: 10s         # 超過 10 秒算 timeout
+
+      # 給 Prometheus 加上額外 label，方便之後在 Grafana 過濾
+      relabelings:
+        - sourceLabels: [__meta_kubernetes_pod_name]
+          targetLabel: pod
+        - sourceLabels: [__meta_kubernetes_namespace]
+          targetLabel: namespace
+        - sourceLabels: [__meta_kubernetes_pod_node_name]
+          targetLabel: node
+
+---
+# ── 2. Prediction Service 的 ServiceMonitor ───────────────────────────────────
+# 監控預測服務本身的健康狀態和推理延遲
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: prediction-service-monitor
+  namespace: monitoring
+  labels:
+    release: prometheus          # ⚠️ 同上，必須和 Helm release 名稱一致
+    app: prediction-service
+spec:
+  namespaceSelector:
+    matchNames:
+      - smart-scaler
+
+  selector:
+    matchLabels:
+      app: prediction-service
+
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s              # 預測服務 scrape 頻率可以低一點，減少資源消耗
+      scrapeTimeout: 10s
+
+      relabelings:
+        - sourceLabels: [__meta_kubernetes_pod_name]
+          targetLabel: pod
+        - sourceLabels: [__meta_kubernetes_namespace]
+          targetLabel: namespace

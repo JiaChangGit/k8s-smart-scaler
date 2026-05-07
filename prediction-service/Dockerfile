@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 
 FROM python:3.11-slim
@@ -19,11 +19,11 @@ WORKDIR /app
 RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 
 # 從 builder 複製安裝好的套件
-COPY --from=builder /root/.local /home/appuser/.local
+COPY --from=builder /usr/local /usr/local
 
 COPY app/ ./app/
 
-ENV PATH=/home/appuser/.local/bin:$PATH
+# ENV PATH=/home/appuser/.local/bin:$PATH
 ENV PYTHONPATH=/app
 
 USER appuser
