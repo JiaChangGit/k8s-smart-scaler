@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: smart-scaler-binding
+subjects:
+  - kind: ServiceAccount
+    name: smart-scaler-sa
+    namespace: smart-scaler
+roleRef:
+  kind: ClusterRole
+  name: smart-scaler-role
+  apiGroup: rbac.authorization.k8s.io

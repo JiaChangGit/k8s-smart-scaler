@@ -1,0 +1,68 @@
+services:
+  # ── 目標服務（被縮放的對象）────────────────────────────
+  demo-app:
+    build: ./demo-app
+    ports:
+      - "8001:8000"
+    environment:
+      POD_NAME: "docker-local"
+    networks:
+      - smart-net
+    restart: unless-stopped
+
+  # ── 預測服務 ─────────────────────────────────────────
+  prediction-service:
+    build: ./prediction-service
+    ports:
+      - "8000:8000"
+    environment:
+      PROMETHEUS_URL: "http://prometheus:9090"
+      TARGET_NAMESPACE: "demo"
+      TARGET_DEPLOYMENT: "demo-app"
+      LOG_LEVEL: "INFO"
+    depends_on:
+      - prometheus
+    networks:
+      - smart-net
+    restart: unless-stopped
+
+  # ── Prometheus ────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=7d"
+    networks:
+      - smart-net
+    restart: unless-stopped
+
+  # ── Grafana ───────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:10.4.2
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - smart-net
+    restart: unless-stopped
+
+volumes:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  smart-net:
+    driver: bridge

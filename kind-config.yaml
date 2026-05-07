@@ -1,0 +1,12 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: smart-scaler
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      - containerPort: 30080   # demo-app
+        hostPort: 30080
+        protocol: TCP
+      - containerPort: 30090   # prometheus (可選)
+        hostPort: 30090
+        protocol: TCP

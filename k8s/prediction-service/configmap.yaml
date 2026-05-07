@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prediction-service-config
+  namespace: smart-scaler
+data:
+  # ⚠️ 若 Prometheus 安裝在不同 namespace，請調整此 URL
+  PROMETHEUS_URL: "http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090"
+  TARGET_NAMESPACE: "demo"
+  TARGET_DEPLOYMENT: "demo-app"
+  LOG_LEVEL: "INFO"

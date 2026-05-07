@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: prediction-service
+  namespace: smart-scaler
+  labels:
+    app: prediction-service
+spec:
+  selector:
+    app: prediction-service
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP

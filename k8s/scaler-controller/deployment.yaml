@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scaler-controller
+  namespace: smart-scaler
+  labels:
+    app: scaler-controller
+spec:
+  replicas: 1   # Controller 必須只跑一個實例，避免重複縮放
+  selector:
+    matchLabels:
+      app: scaler-controller
+  template:
+    metadata:
+      labels:
+        app: scaler-controller
+    spec:
+      serviceAccountName: smart-scaler-sa   # 使用有 K8s 權限的 SA
+      containers:
+        - name: scaler-controller
+          # ⚠️ 將 YOUR_DOCKERHUB_USERNAME 替換為你的 Docker Hub 帳號
+          image: jiachanggit/k8s-smart-scaler-controller:latest
+          imagePullPolicy: Always
+          env:
+            - name: PREDICTION_SERVICE_URL
+              value: "http://prediction-service.smart-scaler.svc.cluster.local:8000"
+            - name: TARGET_NAMESPACE
+              value: "demo"
+            - name: TARGET_DEPLOYMENT
+              value: "demo-app"
+            - name: SCALE_UP_THRESHOLD
+              value: "70"
+            - name: SCALE_DOWN_THRESHOLD
+              value: "30"
+            - name: MIN_REPLICAS
+              value: "1"
+            - name: MAX_REPLICAS
+              value: "10"
+            - name: CHECK_INTERVAL
+              value: "60"
+            - name: LOOKAHEAD_MINUTES
+              value: "30"
+            - name: COOLDOWN_SECONDS
+              value: "120"
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
