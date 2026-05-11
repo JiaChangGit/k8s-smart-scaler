@@ -18,7 +18,7 @@ metadata:
   name: demo-app-monitor
   namespace: monitoring          # ServiceMonitor 本身放在 monitoring namespace
   labels:
-    release: prometheus          # ⚠️ 必須和 Helm release 名稱一致，Prometheus Operator 靠這個 label 找到它
+    release: prometheus          # 必須和 Helm release 名稱一致，Prometheus Operator 靠這個 label 找到它
     app: demo-app
 spec:
   # 要去哪些 namespace 找 Service
@@ -56,7 +56,7 @@ metadata:
   name: prediction-service-monitor
   namespace: monitoring
   labels:
-    release: prometheus          # ⚠️ 同上，必須和 Helm release 名稱一致
+    release: prometheus          # 同上，必須和 Helm release 名稱一致
     app: prediction-service
 spec:
   namespaceSelector:
